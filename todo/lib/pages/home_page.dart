@@ -9,72 +9,52 @@ class HomePage extends StatefulWidget {
   State<HomePage> createState() => _HomePageState();
 }
 
-final TextEditingController _controller = TextEditingController();
-
-//
 class _HomePageState extends State<HomePage> {
+  
+  final _controller = TextEditingController();
+
   List toDoList = [
-    ["Make Tutorial", false],
-    ["Do Exercise", false]
-  ]; 
-  void checkBoxChanged(
-    bool? value,
-    int index,
-  ) {
+    ['Make Tutorial', false],
+    ['Do Exercise', false]
+  ];
+  void checkBoxChanged(bool? value, int index) {
     setState(() {
       toDoList[index][1] = !toDoList[index][1];
     });
   }
-
-  void saveNewTask() {
+void saveNewTask(){
+  setState(() {
+    toDoList.add([_controller.text,false]);
+    Navigator.pop(context);  });
+}
+  void createNewTask() {
     setState(() {
-
-        toDoList.add([_controller.text, false]);
-        Navigator.pop(context);
-        _controller.clear();
-      
+      showDialog(
+          context: context,
+          builder: (ctx) => DialogBox(onSave: saveNewTask,onCancel: ()=>Navigator.of(context),
+                controller: _controller,
+              ));
     });
   }
 
-  void createNewTask() {
-    showDialog(
-        context: context,
-        builder: (context) {
-          return DialogBox(
-            onSaved: saveNewTask,
-            onCancel: () {
-              Navigator.pop(context);
-            },
-            controller: _controller,
-          );
-        });
-  }
-  void deletTask(int index){setState(() {
-    toDoList.removeAt(index);
-  });}
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      backgroundColor: Colors.deepPurple.shade200,
+      backgroundColor: Colors.grey.shade200,
       appBar: AppBar(
+        title: const Text('TO DO'),
         elevation: 0,
-        title: const Center(child: Text("TO DO")),
       ),
       floatingActionButton: FloatingActionButton(
-        onPressed: () {
-          createNewTask();
-        },
-        child: const Icon(Icons.add),
-      ),
+          onPressed: createNewTask,
+          backgroundColor: Colors.white,
+          child: const Icon(Icons.add)),
       body: ListView.builder(
         itemCount: toDoList.length,
-        itemBuilder: ((context, index) {
-          return TodoTile(deletFunction: (context) => deletTask(index),
-            taskname: toDoList[index][0],
-            taskcompleted: toDoList[index][1],
-            onChanged: (value) => checkBoxChanged(value, index),
-          );
-        }),
+        itemBuilder: (context, index) => ToDoTile(
+            taskName: toDoList[index][0],
+            taskCompleted: toDoList[index][1],
+            onChanged: (value) => checkBoxChanged(value, index)),
       ),
     );
   }

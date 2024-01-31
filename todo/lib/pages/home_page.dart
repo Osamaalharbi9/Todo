@@ -25,7 +25,8 @@ class _HomePageState extends State<HomePage> {
 void saveNewTask(){
   setState(() {
     toDoList.add([_controller.text,false]);
-    Navigator.pop(context);  });
+    Navigator.pop(context);
+    _controller.clear();});
 }
   void createNewTask() {
     setState(() {
